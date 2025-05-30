@@ -29,12 +29,13 @@ Welcome to my **first Django project** — a simple and clean **To-Do List Web A
 Follow these steps to run the project locally on your machine:
 
 ### 1️⃣ Clone the repository
-
+```bash
 git clone https://github.com/Boradjash29/-Django-To-Do-List-Web-App.git
 cd -Django-To-Do-List-Web-App/todoproject
-
+```
 ###2️⃣ Start the Django development server
+```bash
 python manage.py runserver
-
+```
 ###3️⃣ Open the app in your browser
 Navigate to http://127.0.0.1:8000/ to access the To-Do List Web App.

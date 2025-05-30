@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% if form.instance.pk %}Edit Task{% else %}Add Task{% endif %}</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        body {
+            background: #f9f9f9;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            background: white;
+            color: #333;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 15px;
+            background: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 15px;
+            color: #007BFF;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Dark mode styles */
+        body.dark-mode {
+            background-color: #121212;
+            color: #ddd;
+        }
+
+        body.dark-mode .form-container {
+            background-color: #1e1e1e;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+        }
+
+        body.dark-mode label {
+            color: #bbb;
+        }
+
+        body.dark-mode input[type="text"],
+        body.dark-mode textarea {
+            background-color: #2a2a2a;
+            border-color: #555;
+            color: #eee;
+        }
+
+        body.dark-mode input[type="text"]:focus,
+        body.dark-mode textarea:focus {
+            border-color: #66aaff;
+        }
+
+        body.dark-mode button {
+            background-color: #3399ff;
+        }
+
+        body.dark-mode button:hover {
+            background-color: #1a75ff;
+        }
+
+        body.dark-mode a {
+            color: #66aaff;
+        }
+
+        body.dark-mode a:hover {
+            color: #aaddff;
+        }
+
+        /* Toggle button styles */
+        #mode-toggle {
+            position: fixed;
+            top: 0px;
+            right: 15px;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            background-color: #007BFF;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,123,255,0.3);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            z-index: 1000;
+        }
+
+        #mode-toggle:hover {
+            background-color: #0056b3;
+            box-shadow: 0 6px 12px rgba(0,86,179,0.5);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<button id="mode-toggle">Dark Mode</button>
+
+<div class="form-container">
+    <h1>{% if form.instance.pk %}Edit Task{% else %}Add New Task{% endif %}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+
+    <a href="{% url 'task_list' %}">Back to list</a>
+</div>
+
+<script>
+    const toggleBtn = document.getElementById('mode-toggle');
+    const body = document.body;
+
+    if (localStorage.getItem('darkMode') === 'enabled') {
+        body.classList.add('dark-mode');
+        toggleBtn.textContent = 'Light Mode';
+    }
+
+    toggleBtn.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
+            toggleBtn.textContent = 'Light Mode';
+            localStorage.setItem('darkMode', 'enabled');
+        } else {
+            toggleBtn.textContent = 'Dark Mode';
+            localStorage.setItem('darkMode', 'disabled');
+        }
+    });
+</script>
+
+</body>
+</html>

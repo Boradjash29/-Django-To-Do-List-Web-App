@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>To-Do List with Light/Dark Mode</title>
+<style>
+    :root {
+        /* Light mode colors */
+        --bg-color: #f4f6f9;
+        --text-color: #222;
+        --text-secondary: #666;
+        --card-bg: #fff;
+        --btn-primary-bg: #007BFF;
+        --btn-primary-hover-bg: #0056b3;
+        --btn-done-bg: #28a745;
+        --btn-done-hover-bg: #1e7e34;
+        --btn-edit-bg: #ffc107;
+        --btn-edit-hover-bg: #d39e00;
+        --btn-delete-bg: #dc3545;
+        --btn-delete-hover-bg: #a71d2a;
+        --box-shadow-light: rgba(0,0,0,0.1);
+        --box-shadow-hover: rgba(0,0,0,0.15);
+        --done-color: #888;
+    }
+    body.dark {
+        /* Dark mode colors */
+        --bg-color: #121212;
+        --text-color: #eee;
+        --text-secondary: #bbb;
+        --card-bg: #1e1e1e;
+        --btn-primary-bg: #3a7bd5;
+        --btn-primary-hover-bg: #1c5bbf;
+        --btn-done-bg: #28a745;
+        --btn-done-hover-bg: #1e7e34;
+        --btn-edit-bg: #ffc107;
+        --btn-edit-hover-bg: #d39e00;
+        --btn-delete-bg: #dc3545;
+        --btn-delete-hover-bg: #a71d2a;
+        --box-shadow-light: rgba(255,255,255,0.1);
+        --box-shadow-hover: rgba(255,255,255,0.15);
+        --done-color: #aaa;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg-color);
+        color: var(--text-color);
+        padding: 30px;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    h1 {
+        margin-bottom: 20px;
+        font-weight: 700;
+        font-size: 2.5rem;
+    }
+
+    a.btn {
+        display: inline-block;
+        padding: 10px 18px;
+        margin-bottom: 30px;
+        font-weight: 600;
+        font-size: 1rem;
+        border-radius: 6px;
+        text-decoration: none;
+        color: white;
+        background-color: var(--btn-primary-bg);
+        box-shadow: 0 4px 8px rgb(0 123 255 / 0.3);
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    a.btn:hover {
+        background-color: var(--btn-primary-hover-bg);
+        box-shadow: 0 6px 12px rgb(0 86 179 / 0.5);
+    }
+
+    /* Dark/Light toggle button style */
+    #modeToggle {
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        cursor: pointer;
+        padding: 8px 14px;
+        background: var(--btn-primary-bg);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+        z-index: 100;
+    }
+    #modeToggle:hover {
+        background-color: var(--btn-primary-hover-bg);
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        width: 100%;
+        max-width: 600px;
+    }
+
+    li {
+        background: var(--card-bg);
+        margin-bottom: 15px;
+        padding: 20px 25px;
+        border-radius: 10px;
+        box-shadow: 0 3px 8px var(--box-shadow-light);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    li:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px var(--box-shadow-hover);
+    }
+
+    .done {
+        text-decoration: line-through;
+        color: var(--done-color);
+        font-style: italic;
+    }
+
+    span {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-color);
+    }
+
+    small {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+    }
+
+    /* Buttons inside each task */
+    li a.btn {
+        width: fit-content;
+        padding: 6px 14px;
+        font-size: 0.9rem;
+        margin-right: 8px;
+        box-shadow: none;
+        transition: background-color 0.25s ease;
+        border-radius: 6px;
+        color: inherit; /* inherit text color for dark mode */
+    }
+
+    li a.btn:last-child {
+        margin-right: 0;
+    }
+
+    a.btn.done-btn {
+        background-color: var(--btn-done-bg);
+        color: #fff;
+    }
+    a.btn.done-btn:hover {
+        background-color: var(--btn-done-hover-bg);
+    }
+
+    a.btn.edit-btn {
+        background-color: var(--btn-edit-bg);
+        color: #212529;
+    }
+    a.btn.edit-btn:hover {
+        background-color: var(--btn-edit-hover-bg);
+        color: #fff;
+    }
+
+    a.btn.delete-btn {
+        background-color: var(--btn-delete-bg);
+        color: #fff;
+    }
+    a.btn.delete-btn:hover {
+        background-color: var(--btn-delete-hover-bg);
+    }
+</style>
+</head>
+<body>
+
+<button id="modeToggle">Switch to Dark Mode</button>
+
+<h1>My To-Do List</h1>
+<a href="{% url 'task_create' %}" class="btn">+ Add New Task</a>
+
+<ul>
+    {% for task in tasks %}
+        <li>
+            <span class="{% if task.is_done %}done{% endif %}">{{ task.title }}</span>
+            <small>({{ task.created_at|date:"M d, Y H:i" }})</small>
+            <small>{{ task.description }}</small>
+            <div>
+                <a href="{% url 'task_toggle' task.pk %}" class="btn done-btn">
+                    {% if task.is_done %}Mark Pending{% else %}Mark Done{% endif %}
+                </a>
+                <a href="{% url 'task_edit' task.pk %}" class="btn edit-btn">Edit</a>
+                <a href="{% url 'task_delete' task.pk %}" class="btn delete-btn">Delete</a>
+            </div>
+        </li>
+    {% empty %}
+        <li>No tasks found.</li>
+    {% endfor %}
+</ul>
+
+<script>
+    const toggleBtn = document.getElementById('modeToggle');
+    const body = document.body;
+
+    // Check saved preference on load
+    if(localStorage.getItem('darkMode') === 'enabled') {
+        body.classList.add('dark');
+        toggleBtn.textContent = "Light Mode";
+    }
+
+    toggleBtn.addEventListener('click', () => {
+        body.classList.toggle('dark');
+        if(body.classList.contains('dark')) {
+            toggleBtn.textContent = "Light Mode";
+            localStorage.setItem('darkMode', 'enabled');
+        } else {
+            toggleBtn.textContent = "Dark Mode";
+            localStorage.setItem('darkMode', 'disabled');
+        }
+    });
+</script>
+
+</body>
+</html>
